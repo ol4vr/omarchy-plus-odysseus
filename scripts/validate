@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
+for file in "$repo/scripts/control" "$repo/scripts/install-runtime" "$repo/scripts/validate" "$repo/runtime/ready"; do bash -n "$file"; done
+python3 "$repo/scripts/test-control.py"
+python3 - "$repo" <<'PY'
+import json, pathlib, sys
+p = pathlib.Path(sys.argv[1])
+m = json.loads((p / 'manifest.json').read_text())
+c = json.loads((p / 'config.json').read_text())
+assert m['id'] == 'io.github.ol4vr.odysseus'
+assert (p / m['entryPoints']['barWidget']).is_file()
+assert c['start_at_boot'] is False
+assert '@sha256:' in c['image']
+assert '[Install]' not in (p / 'runtime/omarchy-plus-odysseus.service').read_text()
+assert 'Restart=no' in (p / 'runtime/omarchy-plus-odysseus.service').read_text()
+print('Manifest, runtime policy and shell syntax: PASS')
+PY
+if command -v omarchy >/dev/null; then omarchy plugin validate "$repo"; fi
+if command -v qmllint >/dev/null; then qmllint -I "${OMARCHY_PATH:-$HOME/.local/share/omarchy}/shell" "$repo/BarWidget.qml"; fi
+if command -v systemd-analyze >/dev/null && [[ -x /usr/bin/docker && -x /usr/local/libexec/omarchy-plus-odysseus-ready ]]; then
+  systemd-analyze verify "$repo/runtime/omarchy-plus-odysseus.service"
+fi

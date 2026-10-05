@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Omarchy+ Odysseus runtime v1
+set -euo pipefail
+while (( SECONDS < 120 )); do
+  if /usr/bin/docker exec odysseus-odysseus-1 python -c '
+import json, urllib.request
+with urllib.request.urlopen("http://odysseus-llama:8000/health", timeout=2) as response:
+    assert json.load(response).get("status") == "ok"
+with urllib.request.urlopen("http://127.0.0.1:7000/", timeout=2) as response:
+    assert response.status == 200
+'; then
+    exit 0
+  fi
+  sleep 2
+done
+echo "Odysseus or its local model did not become ready in time." >&2
+exit 1

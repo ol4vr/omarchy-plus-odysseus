@@ -1,0 +1,6 @@
+*.log
+.env
+data/
+logs/
+*.gguf
+*.safetensors

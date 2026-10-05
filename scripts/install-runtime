@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)
+sudo docker inspect odysseus-llama >/dev/null
+sudo docker inspect odysseus-odysseus-1 >/dev/null
+for target in /etc/systemd/system/omarchy-plus-odysseus.service /usr/local/libexec/omarchy-plus-odysseus-ready; do
+  if [[ -e "$target" ]] && ! sudo rg -q '^# Omarchy\+ Odysseus runtime v1$' "$target"; then
+    echo "Refusing to overwrite an unrecognised runtime file: $target" >&2
+    exit 1
+  fi
+done
+# Adopt the existing model container without changing the workspace or downloads.
+sudo systemctl stop omarchy-plus-odysseus.service 2>/dev/null || true
+sudo docker stop odysseus-llama >/dev/null
+sudo docker update --restart=no odysseus-llama >/dev/null
+sudo install -D -m 0644 "$repo/runtime/omarchy-plus-odysseus.service" /etc/systemd/system/omarchy-plus-odysseus.service
+sudo install -D -m 0755 "$repo/runtime/ready" /usr/local/libexec/omarchy-plus-odysseus-ready
+sudo systemctl daemon-reload
+echo "On-demand runtime installed. Model stopped; no boot autostart enabled."

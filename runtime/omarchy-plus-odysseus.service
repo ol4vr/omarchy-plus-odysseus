@@ -1,0 +1,16 @@
+# Omarchy+ Odysseus runtime v1
+[Unit]
+Description=Omarchy+ on-demand Odysseus local AI model
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/docker start --attach odysseus-llama
+ExecStartPost=/usr/local/libexec/omarchy-plus-odysseus-ready
+ExecStop=-/usr/bin/docker stop --time 15 odysseus-llama
+ExecStopPost=-/usr/bin/docker stop --time 15 odysseus-llama
+TimeoutStartSec=180
+TimeoutStopSec=45
+Restart=no
+# Deliberately no Install section: the model is never enabled at boot.

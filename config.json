@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "workspace_url": "http://localhost:7000",
+  "endpoint_url": "http://odysseus-llama:8000/v1",
+  "model_alias": "qwen3-14b",
+  "model_repository": "unsloth/Qwen3-14B-GGUF",
+  "model_revision": "a04a82c4739b3ef5fa6da7d10261db2c67dd1985",
+  "model_filename": "Qwen3-14B-Q4_K_M.gguf",
+  "image": "ghcr.io/ggml-org/llama.cpp@sha256:883915ea20a4b350e98f7284098f4d400c21e9b366e248d397cd42d90602a84c",
+  "context_size": 20000,
+  "parallel": 1,
+  "gpu_layers": 99,
+  "start_at_boot": false
+}
