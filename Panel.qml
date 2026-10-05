@@ -18,6 +18,12 @@ Panel {
   readonly property bool busy: hostWidget ? hostWidget.busy : false
   readonly property bool active: modelState === "active"
   readonly property string statusLabel: busy ? "WORKING" : active ? "READY" : modelState === "failed" ? "FAILED" : modelState === "inactive" ? "OFF" : "UNKNOWN"
+  readonly property color blueTone: "#7AA2F7"
+  readonly property color greenTone: "#8FCB9B"
+  readonly property color amberTone: "#E0AF68"
+  readonly property color redTone: "#F7768E"
+  readonly property color statusTone: busy ? amberTone : active ? greenTone : modelState === "failed" ? redTone : blueTone
+  function tint(tone, opacity) { return Qt.rgba(tone.r, tone.g, tone.b, opacity) }
   function act(name) { if (hostWidget && !busy) hostWidget.runAction(name) }
   function switchPanel(direction) {
     if (root.bar && typeof root.bar.switchPanelFrom === "function")
@@ -61,8 +67,8 @@ Panel {
           Text {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
-            text: "ODYSSEUS"
-            color: Qt.darker(root.contentForeground, 1.4)
+            text: "󰚩  ODYSSEUS"
+            color: root.blueTone
             font.family: root.contentFontFamily
             font.pixelSize: Style.font.caption
             font.letterSpacing: 2
@@ -71,10 +77,10 @@ Panel {
           Text {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
-            text: root.statusLabel
-            color: root.contentForeground
+            text: (root.busy ? "󱎫  " : root.active ? "󰄬  " : "󰐥  ") + root.statusLabel
+            color: root.statusTone
             font.family: root.contentFontFamily
-            font.pixelSize: 36
+            font.pixelSize: 32
             font.bold: true
           }
           Text {
@@ -94,12 +100,12 @@ Panel {
               width: root.active ? parent.width : parent.height
               height: parent.height
               radius: parent.radius
-              color: Style.selectedStateColor(root.contentForeground, Color.accent)
+              color: root.statusTone
             }
           }
           Button {
             width: parent.width
-            text: "Open chat"
+            text: "󰍡  Open chat"
             enabled: !root.busy
             fontFamily: root.contentFontFamily
             foreground: root.contentForeground
@@ -120,19 +126,30 @@ Panel {
             width: parent.width
             spacing: Style.space(8)
             Repeater {
-              model: [{label: "GPU", value: "4090"}, {label: "Context", value: "20k"}, {label: "Format", value: "Q4_K_M"}]
-              Item {
+              model: [{label: "GPU", value: "4090", icon: "󰢮", tone: root.greenTone}, {label: "Context", value: "20k", icon: "󰍡", tone: root.blueTone}, {label: "Format", value: "Q4_K_M", icon: "󰆼", tone: root.amberTone}]
+              Rectangle {
                 required property var modelData
                 width: (parent.width - Style.space(16)) / 3
-                height: statColumn.implicitHeight
+                height: statColumn.implicitHeight + Style.space(20)
+                color: root.tint(modelData.tone, 0.07)
+                border.color: root.tint(modelData.tone, 0.22)
+                border.width: 1
+                radius: Style.cornerRadius
                 Column {
                   id: statColumn
                   anchors.centerIn: parent
                   spacing: Style.space(2)
                   Text {
                     anchors.horizontalCenter: parent.horizontalCenter
+                    text: modelData.icon
+                    color: modelData.tone
+                    font.family: root.contentFontFamily
+                    font.pixelSize: Style.font.title
+                  }
+                  Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
                     text: modelData.value
-                    color: root.contentForeground
+                    color: modelData.tone
                     font.family: root.contentFontFamily
                     font.pixelSize: Style.font.title
                     font.bold: true
@@ -156,29 +173,29 @@ Panel {
             PanelSectionHeader {
               width: parent.width
               horizontalAlignment: Text.AlignHCenter
-              text: "Controls"
-              foreground: root.contentForeground
+              text: "󰒓  CONTROLS"
+              foreground: root.blueTone
               fontFamily: root.contentFontFamily
             }
             Toggle {
               width: parent.width
-              label: "Keep model loaded"
+              label: "󰐥  Keep model loaded"
               description: root.busy ? "Please wait…" : root.active ? "Switch off to free GPU memory" : "Switch on to get ready to chat"
               checked: root.active
               enabled: !root.busy
               foreground: root.contentForeground
-              accent: Color.accent
+              accent: root.greenTone
               fontFamily: root.contentFontFamily
               onClicked: root.act(root.active ? "stop" : "start")
             }
             Toggle {
               width: parent.width
-              label: "Open chat when loading"
+              label: "󰖟  Open chat when loading"
               description: "Also open the browser when you switch on"
               checked: root.hostWidget ? root.hostWidget.openAfterStart : true
               enabled: !root.busy
               foreground: root.contentForeground
-              accent: Color.accent
+              accent: root.blueTone
               fontFamily: root.contentFontFamily
               onClicked: root.act(root.hostWidget.openAfterStart ? "auto-open-off" : "auto-open-on")
             }

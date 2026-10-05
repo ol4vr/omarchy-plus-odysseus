@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.ol4vr.odysseus",
   "name": "Odysseus",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "author": "Olav Rorvik",
   "description": "On-demand local AI workspace with explicit GPU model start and stop",
   "kinds": ["bar-widget"],

@@ -2,7 +2,7 @@
 
 Owned Omarchy bar plugin for the locally hosted Odysseus AI workspace.
 
-Left click opens a Pomodoro-style control panel showing model status, GPU, context and format. Open chat starts the Qwen3-14B model, waits for model and workspace readiness, then opens http://localhost:7000. The Keep model loaded toggle explicitly loads or unloads the model. READY means it is loaded; OFF means it is stopped. Right click on the bar remains a quick Stop action. The filled dot means the managed service is active; an ellipsis indicates startup or an action in progress. The plugin polls service state every five seconds without starting Docker or loading a model.
+Left click opens a control panel with weather-style tinted metric cards, icons, and blue/green/amber status colors showing model status, GPU, context and format. Open chat starts the Qwen3-14B model, waits for model and workspace readiness, then opens http://localhost:7000. The Keep model loaded toggle explicitly loads or unloads the model. READY means it is loaded; OFF means it is stopped. Right click on the bar remains a quick Stop action. The filled dot means the managed service is active; an ellipsis indicates startup or an action in progress. The plugin polls service state every five seconds without starting Docker or loading a model.
 
 The Open chat when loading toggle determines whether turning the model on also opens the browser. Its preference is stored in `${XDG_STATE_HOME:-~/.local/state}/omarchy-plus/odysseus/preferences.json`. It defaults to enabled and never enables boot autostart. The Open chat button always opens the browser. Keyboard controls: O opens the workspace; S starts/stops the AI; Escape closes the panel.
 
@@ -36,3 +36,5 @@ Stop the model first, then remove the plugin with `omarchy plugin remove io.gith
 ## License
 
 MIT. Upstream Odysseus and llama.cpp retain their own licenses; this repository distributes neither project nor their model weights.
+
+The custom hover tooltip shows model status and click shortcuts. Green means ready, amber means busy, red means failed, and blue means off or checking. GPU, context and format cards describe the configured model; they are not live utilization readings.
