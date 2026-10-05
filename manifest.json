@@ -2,14 +2,14 @@
   "schemaVersion": 1,
   "id": "io.github.ol4vr.odysseus",
   "name": "Odysseus",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Olav Rorvik",
   "description": "On-demand local AI workspace with explicit GPU model start and stop",
   "kinds": ["bar-widget"],
   "entryPoints": {"barWidget": "BarWidget.qml"},
   "barWidget": {
     "displayName": "Odysseus",
-    "description": "Left click opens local AI; right click stops it and releases VRAM",
+    "description": "Local AI status panel, model power toggle and workspace controls",
     "category": "Utilities",
     "allowMultiple": false
   }

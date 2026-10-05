@@ -10,6 +10,7 @@ m = json.loads((p / 'manifest.json').read_text())
 c = json.loads((p / 'config.json').read_text())
 assert m['id'] == 'io.github.ol4vr.odysseus'
 assert (p / m['entryPoints']['barWidget']).is_file()
+assert (p / 'Panel.qml').is_file()
 assert c['start_at_boot'] is False
 assert '@sha256:' in c['image']
 assert '[Install]' not in (p / 'runtime/omarchy-plus-odysseus.service').read_text()
@@ -17,7 +18,7 @@ assert 'Restart=no' in (p / 'runtime/omarchy-plus-odysseus.service').read_text()
 print('Manifest, runtime policy and shell syntax: PASS')
 PY
 if command -v omarchy >/dev/null; then omarchy plugin validate "$repo"; fi
-if command -v qmllint >/dev/null; then qmllint -I "${OMARCHY_PATH:-$HOME/.local/share/omarchy}/shell" "$repo/BarWidget.qml"; fi
+if command -v qmllint >/dev/null; then qmllint -I "${OMARCHY_PATH:-$HOME/.local/share/omarchy}/shell" "$repo/BarWidget.qml" "$repo/Panel.qml"; fi
 if command -v systemd-analyze >/dev/null && [[ -x /usr/bin/docker && -x /usr/local/libexec/omarchy-plus-odysseus-ready ]]; then
   systemd-analyze verify "$repo/runtime/omarchy-plus-odysseus.service"
 fi

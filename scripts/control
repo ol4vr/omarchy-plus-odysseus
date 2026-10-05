@@ -1,13 +1,45 @@
 #!/usr/bin/env bash
 set -euo pipefail
 notice() { if command -v notify-send >/dev/null; then notify-send "Odysseus" "$1" || true; fi; }
+preferences() {
+  python3 - "${1:-read}" <<'PY'
+import json, os, pathlib, subprocess, sys, tempfile
+directory = pathlib.Path(os.environ.get('XDG_STATE_HOME') or pathlib.Path.home() / '.local/state') / 'omarchy-plus/odysseus'
+path = directory / 'preferences.json'
+try:
+    saved = json.loads(path.read_text())
+    value = saved.get('open_after_start', True)
+    if not isinstance(value, bool): value = True
+except (OSError, ValueError, AttributeError):
+    value = True
+mode = sys.argv[1]
+if mode in ('on', 'off'):
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    fd, tmp = tempfile.mkstemp(prefix='.preferences-', dir=directory)
+    try:
+        with os.fdopen(fd, 'w') as stream:
+            json.dump({'open_after_start': mode == 'on'}, stream)
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp): os.unlink(tmp)
+elif mode == 'status':
+    try:
+        state = subprocess.run(['systemctl', 'show', 'omarchy-plus-odysseus.service', '--property=ActiveState', '--value'], capture_output=True, text=True, timeout=3).stdout.strip()
+    except (OSError, subprocess.TimeoutExpired): state = 'unknown'
+    print(json.dumps({'state': state or 'unknown', 'open_after_start': value}))
+else:
+    print('true' if value else 'false')
+PY
+}
 case "${1:-}" in
-  open)
+  open|start)
     if ! pkexec /usr/bin/systemctl start omarchy-plus-odysseus.service; then
       notice "AI startup failed or authentication was cancelled. Check journalctl -u omarchy-plus-odysseus.service."
       exit 1
     fi
-    xdg-open http://localhost:7000
+    if [[ "$1" == open ]] || [[ "$(preferences read)" == true ]]; then
+      xdg-open http://localhost:7000
+    fi
     ;;
   stop)
     if ! pkexec /usr/bin/systemctl stop omarchy-plus-odysseus.service; then
@@ -16,5 +48,8 @@ case "${1:-}" in
     fi
     notice "AI stopped; model VRAM released."
     ;;
-  *) echo "Usage: $0 open|stop" >&2; exit 2 ;;
+  status) preferences status ;;
+  auto-open-on) preferences on ;;
+  auto-open-off) preferences off ;;
+  *) echo "Usage: $0 open|start|stop|status|auto-open-on|auto-open-off" >&2; exit 2 ;;
 esac

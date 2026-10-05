@@ -2,7 +2,9 @@
 
 Owned Omarchy bar plugin for the locally hosted Odysseus AI workspace.
 
-Left click starts the Qwen3-14B model, waits for both model and workspace readiness, and opens http://localhost:7000. Right click stops the model and releases its GPU memory. The filled dot means the managed service is active; an ellipsis indicates startup or an action in progress. The plugin polls service state every five seconds without starting Docker or loading a model.
+Left click opens a Pomodoro-style control panel showing model status, GPU, context and format. Open workspace starts the Qwen3-14B model, waits for model and workspace readiness, then opens http://localhost:7000. The AI model toggle and Start/Stop button explicitly control model power. Right click on the bar remains a quick Stop action. The filled dot means the managed service is active; an ellipsis indicates startup or an action in progress. The plugin polls service state every five seconds without starting Docker or loading a model.
+
+The Open workspace on start toggle determines whether turning the model on also opens the browser. Its preference is stored in `${XDG_STATE_HOME:-~/.local/state}/omarchy-plus/odysseus/preferences.json`. It defaults to enabled and never enables boot autostart. The Open workspace button always opens the browser. Keyboard controls: O opens the workspace; S starts/stops the AI; Escape closes the panel.
 
 Closing the browser does not stop the model. Use right click to unload it. Enabling the plugin does not start the model. The runtime has no boot enablement or automatic restart. The workspace services may remain running without occupying model VRAM.
 
