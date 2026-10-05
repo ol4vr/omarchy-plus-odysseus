@@ -2,9 +2,9 @@
 
 Owned Omarchy bar plugin for the locally hosted Odysseus AI workspace.
 
-Left click opens a Pomodoro-style control panel showing model status, GPU, context and format. Open workspace starts the Qwen3-14B model, waits for model and workspace readiness, then opens http://localhost:7000. The AI model toggle and Start/Stop button explicitly control model power. Right click on the bar remains a quick Stop action. The filled dot means the managed service is active; an ellipsis indicates startup or an action in progress. The plugin polls service state every five seconds without starting Docker or loading a model.
+Left click opens a Pomodoro-style control panel showing model status, GPU, context and format. Open chat starts the Qwen3-14B model, waits for model and workspace readiness, then opens http://localhost:7000. The Keep model loaded toggle explicitly loads or unloads the model. READY means it is loaded; OFF means it is stopped. Right click on the bar remains a quick Stop action. The filled dot means the managed service is active; an ellipsis indicates startup or an action in progress. The plugin polls service state every five seconds without starting Docker or loading a model.
 
-The Open workspace on start toggle determines whether turning the model on also opens the browser. Its preference is stored in `${XDG_STATE_HOME:-~/.local/state}/omarchy-plus/odysseus/preferences.json`. It defaults to enabled and never enables boot autostart. The Open workspace button always opens the browser. Keyboard controls: O opens the workspace; S starts/stops the AI; Escape closes the panel.
+The Open chat when loading toggle determines whether turning the model on also opens the browser. Its preference is stored in `${XDG_STATE_HOME:-~/.local/state}/omarchy-plus/odysseus/preferences.json`. It defaults to enabled and never enables boot autostart. The Open chat button always opens the browser. Keyboard controls: O opens the workspace; S starts/stops the AI; Escape closes the panel.
 
 Closing the browser does not stop the model. Use right click to unload it. Enabling the plugin does not start the model. The runtime has no boot enablement or automatic restart. The workspace services may remain running without occupying model VRAM.
 
@@ -15,7 +15,7 @@ Hugin: Omarchy/Quickshell, Docker Compose, NVIDIA Container Toolkit, polkit with
 1. Run `scripts/validate` in the checkout.
 2. Run `scripts/install-runtime`. This installs two owned root files and stops/adopts the existing model container; it does not touch Odysseus data, credentials or downloaded models.
 3. Install the GitHub plugin: `omarchy plugin add https://github.com/ol4vr/omarchy-plus-odysseus.git --enable --yes`.
-4. Choose placement with `omarchy bar move io.github.ol4vr.odysseus --section right`.
+4. Choose placement with `omarchy bar move io.github.ol4vr.odysseus --section center`.
 
 Open/Stop uses `pkexec /usr/bin/systemctl` for this dedicated service and may prompt for authentication. No Docker-group membership, passwordless sudo rule or Docker socket access is granted to the plugin. The service runs Docker control as root; it never executes source files from a user-writable checkout as root. Only root-owned copies under `/etc/systemd/system` and `/usr/local/libexec` are executed.
 

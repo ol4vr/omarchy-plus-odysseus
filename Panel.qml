@@ -17,7 +17,7 @@ Panel {
   readonly property string modelState: hostWidget ? hostWidget.modelState : "unknown"
   readonly property bool busy: hostWidget ? hostWidget.busy : false
   readonly property bool active: modelState === "active"
-  readonly property string statusLabel: busy ? "WORKING" : active ? "RUNNING" : modelState === "failed" ? "FAILED" : modelState === "inactive" ? "STOPPED" : "UNKNOWN"
+  readonly property string statusLabel: busy ? "WORKING" : active ? "READY" : modelState === "failed" ? "FAILED" : modelState === "inactive" ? "OFF" : "UNKNOWN"
   function act(name) { if (hostWidget && !busy) hostWidget.runAction(name) }
   function switchPanel(direction) {
     if (root.bar && typeof root.bar.switchPanelFrom === "function")
@@ -97,27 +97,23 @@ Panel {
               color: Style.selectedStateColor(root.contentForeground, Color.accent)
             }
           }
-          Row {
+          Button {
             width: parent.width
-            spacing: Style.space(8)
-            Button {
-              width: (parent.width - parent.spacing) * 0.65
-              text: "Open workspace"
-              enabled: !root.busy
-              fontFamily: root.contentFontFamily
-              foreground: root.contentForeground
-              accent: Color.accent
-              onClicked: root.act("open")
-            }
-            Button {
-              width: (parent.width - parent.spacing) * 0.35
-              text: root.active ? "Stop AI" : "Start AI"
-              enabled: !root.busy
-              fontFamily: root.contentFontFamily
-              foreground: root.contentForeground
-              accent: Color.accent
-              onClicked: root.act(root.active ? "stop" : "start")
-            }
+            text: "Open chat"
+            enabled: !root.busy
+            fontFamily: root.contentFontFamily
+            foreground: root.contentForeground
+            accent: Color.accent
+            onClicked: root.act("open")
+          }
+          Text {
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            text: "Loads the model if needed, then opens your browser."
+            color: Qt.darker(root.contentForeground, 1.6)
+            font.family: root.contentFontFamily
+            font.pixelSize: Style.font.caption
           }
           PanelSeparator { foreground: root.contentForeground }
           Row {
@@ -166,8 +162,8 @@ Panel {
             }
             Toggle {
               width: parent.width
-              label: "AI model"
-              description: root.busy ? "Waiting for the current action" : root.active ? "Running on your GPU" : "Start only when you need it"
+              label: "Keep model loaded"
+              description: root.busy ? "Please wait…" : root.active ? "Switch off to free GPU memory" : "Switch on to get ready to chat"
               checked: root.active
               enabled: !root.busy
               foreground: root.contentForeground
@@ -177,8 +173,8 @@ Panel {
             }
             Toggle {
               width: parent.width
-              label: "Open workspace on start"
-              description: "Open the browser when you turn AI on"
+              label: "Open chat when loading"
+              description: "Also open the browser when you switch on"
               checked: root.hostWidget ? root.hostWidget.openAfterStart : true
               enabled: !root.busy
               foreground: root.contentForeground
@@ -191,7 +187,7 @@ Panel {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
-            text: "No model autostart · Stop AI to release VRAM"
+            text: "Closing chat keeps the model loaded. Switch it off here to free GPU memory. It stays off at boot."
             color: Qt.darker(root.contentForeground, 1.6)
             font.family: root.contentFontFamily
             font.pixelSize: Style.font.caption
